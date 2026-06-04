@@ -66,6 +66,44 @@ Most projects should keep the Procrastinate and application revision trees
 independent. If your own schema changes must run after a specific Procrastinate
 revision, your revision may set `down_revision` to that Procrastinate revision.
 
+For deploy scripts, Procrastinate can print the Alembic revision metadata as JSON:
+
+```console
+$ procrastinate schema --alembic-plan
+```
+
+The output contains entries like:
+
+```json
+[
+  {
+    "version": "03.04.00",
+    "index": 1,
+    "phase": "pre",
+    "migration_file": "03.04.00_01_pre_add_retry_failed_job_procedure.sql",
+    "revision": "procrastinate_0036",
+    "down_revision": "procrastinate_0035"
+  },
+  {
+    "version": "03.04.00",
+    "index": 50,
+    "phase": "post",
+    "migration_file": "03.04.00_50_post_add_retry_failed_job_procedure.sql",
+    "revision": "procrastinate_0037",
+    "down_revision": "procrastinate_0036"
+  }
+]
+```
+
+You can also ask for the Alembic revision matching one Procrastinate version and
+phase:
+
+```console
+$ alembic upgrade "$(procrastinate schema --alembic-revision --alembic-version 3.4.0 --alembic-phase pre)"
+$ yoursystem/deploy procrastinate 3.4.0
+$ alembic upgrade "$(procrastinate schema --alembic-revision --alembic-version 3.4.0 --alembic-phase post)"
+```
+
 It's your responsibility to keep track of which migrations have been applied yet
 or not. Thankfully, the names of procrastinate migrations should help you: they
 follow a specific pattern:

@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import dataclasses
 import datetime
+import json
 import logging
 import os
 
@@ -124,6 +125,28 @@ async def test_schema_alembic_config_snippet(entrypoint):
 
     assert "version_locations = %(here)s/versions" in result.stdout
     assert "alembic/versions" in result.stdout
+    assert result.exit_code == 0
+
+
+async def test_schema_alembic_plan(entrypoint):
+    result = await entrypoint("schema --alembic-plan")
+
+    plan = json.loads(result.stdout)
+    assert plan[-2]["version"] == "03.04.00"
+    assert plan[-2]["phase"] == "pre"
+    assert plan[-2]["revision"] == "procrastinate_0036"
+    assert plan[-1]["version"] == "03.04.00"
+    assert plan[-1]["phase"] == "post"
+    assert plan[-1]["revision"] == "procrastinate_0037"
+    assert result.exit_code == 0
+
+
+async def test_schema_alembic_revision(entrypoint):
+    result = await entrypoint(
+        "schema --alembic-revision --alembic-version 3.4.0 --alembic-phase pre"
+    )
+
+    assert result.stdout == "procrastinate_0036\n"
     assert result.exit_code == 0
 
 
