@@ -12,6 +12,7 @@ from procrastinate import connector as connector_module
 
 migrations_path = pathlib.Path(__file__).parent / "sql" / "migrations"
 alembic_versions_path = pathlib.Path(__file__).parent / "alembic" / "versions"
+alembic_version_locations_entry = "procrastinate:alembic/versions"
 
 MigrationPhase = Literal["pre", "post"]
 
@@ -56,7 +57,7 @@ class SchemaManager:
         return (
             "[alembic]\n"
             "version_locations = %(here)s/versions "
-            f"{cls.get_alembic_versions_path()}\n"
+            f"{alembic_version_locations_entry}\n"
         )
 
     @staticmethod

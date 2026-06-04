@@ -25,7 +25,7 @@ def test_get_alembic_config_snippet(app):
     snippet = app.schema_manager.get_alembic_config_snippet()
 
     assert "version_locations = %(here)s/versions" in snippet
-    assert app.schema_manager.get_alembic_versions_path() in snippet
+    assert "procrastinate:alembic/versions" in snippet
 
 
 def test_get_alembic_migration_plan(app):

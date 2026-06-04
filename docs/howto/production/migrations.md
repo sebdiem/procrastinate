@@ -26,7 +26,7 @@ Procrastinate also ships optional Alembic revisions that wrap the same SQL
 migration scripts. Install them with:
 
 ```console
-$ pip install "procrastinate[alembic]"
+pip install "procrastinate[alembic]"
 ```
 
 :::{note}
@@ -47,17 +47,28 @@ $ procrastinate schema --migrations-path
 If your project already uses Alembic, add Procrastinate's packaged Alembic
 versions directory to your Alembic `version_locations`, then run Alembic normally:
 
+```ini
+[alembic]
+version_locations = %(here)s/versions procrastinate:alembic/versions
+```
+
+The `procrastinate:alembic/versions` entry is resolved by Alembic from the
+installed Python package, so it does not depend on where your virtual environment
+or site-packages directory is located.
+
+You can print the resolved filesystem path for inspection:
+
 ```console
-$ procrastinate schema --alembic-versions-path
+procrastinate schema --alembic-versions-path
 /home/me/my_venv/lib/python3.x/lib/site-packages/procrastinate/alembic/versions
 ```
 
 You can also print a minimal configuration snippet:
 
 ```console
-$ procrastinate schema --alembic-config-snippet
+procrastinate schema --alembic-config-snippet
 [alembic]
-version_locations = %(here)s/versions /home/me/my_venv/lib/python3.x/lib/site-packages/procrastinate/alembic/versions
+version_locations = %(here)s/versions procrastinate:alembic/versions
 ```
 
 The Procrastinate Alembic tree uses revision IDs prefixed with `procrastinate_`
@@ -69,7 +80,7 @@ revision, your revision may set `down_revision` to that Procrastinate revision.
 For deploy scripts, Procrastinate can print the Alembic revision metadata as JSON:
 
 ```console
-$ procrastinate schema --alembic-plan
+procrastinate schema --alembic-plan
 ```
 
 The output contains entries like:
@@ -99,9 +110,9 @@ You can also ask for the Alembic revision matching one Procrastinate version and
 phase:
 
 ```console
-$ alembic upgrade "$(procrastinate schema --alembic-revision --alembic-version 3.4.0 --alembic-phase pre)"
-$ yoursystem/deploy procrastinate 3.4.0
-$ alembic upgrade "$(procrastinate schema --alembic-revision --alembic-version 3.4.0 --alembic-phase post)"
+alembic upgrade "$(procrastinate schema --alembic-revision --alembic-version 3.4.0 --alembic-phase pre)"
+yoursystem/deploy procrastinate 3.4.0
+alembic upgrade "$(procrastinate schema --alembic-revision --alembic-version 3.4.0 --alembic-phase post)"
 ```
 
 It's your responsibility to keep track of which migrations have been applied yet
