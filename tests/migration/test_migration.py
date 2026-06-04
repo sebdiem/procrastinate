@@ -70,6 +70,14 @@ def django_db(db):
     yield db
 
 
+@pytest.fixture
+def alembic_database(db_factory):
+    dbname = "procrastinate_alembic"
+    db_factory(dbname=dbname)
+
+    return dbname
+
+
 def test_migration(schema_database, migrations_database, run_migrations):
     # apply the migrations on the migrations_database database
     run_migrations(migrations_database)
@@ -142,14 +150,6 @@ def run_alembic_migrations(tmp_path, dbname, *version_locations):
 
     config = make_alembic_config(tmp_path, dbname, *version_locations)
     alembic_command.upgrade(config, "heads")
-
-
-@pytest.fixture
-def alembic_database(db_factory):
-    dbname = "procrastinate_alembic"
-    db_factory(dbname=dbname)
-
-    return dbname
 
 
 def test_alembic_migration(schema_database, alembic_database, db_execute, tmp_path):
