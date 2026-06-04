@@ -56,21 +56,6 @@ The `procrastinate:alembic/versions` entry is resolved by Alembic from the
 installed Python package, so it does not depend on where your virtual environment
 or site-packages directory is located.
 
-You can print the resolved filesystem path for inspection:
-
-```console
-procrastinate schema --alembic-versions-path
-/home/me/my_venv/lib/python3.x/lib/site-packages/procrastinate/alembic/versions
-```
-
-You can also print a minimal configuration snippet:
-
-```console
-procrastinate schema --alembic-config-snippet
-[alembic]
-version_locations = %(here)s/versions procrastinate:alembic/versions
-```
-
 The Procrastinate Alembic tree uses revision IDs prefixed with `procrastinate_`
 and a `procrastinate` branch label, so it can live alongside your own revisions.
 Most projects should keep the Procrastinate and application revision trees

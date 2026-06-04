@@ -483,22 +483,6 @@ def configure_schema_parser(subparsers: argparse._SubParsersAction[Any]):  # pyr
     )
     add_argument(
         schema_parser,
-        "--alembic-versions-path",
-        action="store_const",
-        const="alembic_versions_path",
-        dest="action",
-        help="Output the path to the directory containing the Alembic revisions",
-    )
-    add_argument(
-        schema_parser,
-        "--alembic-config-snippet",
-        action="store_const",
-        const="alembic_config_snippet",
-        dest="action",
-        help="Output an Alembic configuration snippet for Procrastinate revisions",
-    )
-    add_argument(
-        schema_parser,
         "--alembic-plan",
         action="store_const",
         const="alembic_plan",
@@ -688,10 +672,6 @@ async def schema(
         print(schema_manager.get_schema().strip())
     elif action == "migrations_path":
         print(schema_manager.get_migrations_path())
-    elif action == "alembic_versions_path":
-        print(schema_manager.get_alembic_versions_path())
-    elif action == "alembic_config_snippet":
-        print(schema_manager.get_alembic_config_snippet().strip())
     elif action == "alembic_plan":
         print(
             json.dumps(
