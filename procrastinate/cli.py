@@ -9,11 +9,10 @@ import os
 import shlex
 import sys
 from collections.abc import Awaitable, Callable
-from typing import Any, Literal, cast
+from typing import Any, Literal
 
 import procrastinate
 from procrastinate import connector, exceptions, jobs, shell, types, utils
-from procrastinate import schema as schema_module
 
 logger = logging.getLogger(__name__)
 
@@ -481,33 +480,6 @@ def configure_schema_parser(subparsers: argparse._SubParsersAction[Any]):  # pyr
         dest="action",
         help="Output the path to the directory containing the migration scripts",
     )
-    add_argument(
-        schema_parser,
-        "--alembic-plan",
-        action="store_const",
-        const="alembic_plan",
-        dest="action",
-        help="Output Procrastinate Alembic revision metadata as JSON",
-    )
-    add_argument(
-        schema_parser,
-        "--alembic-revision",
-        action="store_const",
-        const="alembic_revision",
-        dest="action",
-        help="Output the Procrastinate Alembic revision for a version and phase",
-    )
-    add_argument(
-        schema_parser,
-        "--alembic-version",
-        help="Procrastinate version for --alembic-revision, e.g. 03.04.00",
-    )
-    add_argument(
-        schema_parser,
-        "--alembic-phase",
-        choices=["pre", "post"],
-        help="Procrastinate migration phase for --alembic-revision",
-    )
 
 
 def configure_healthchecks_parser(
@@ -652,12 +624,7 @@ def configure_task(
     )
 
 
-async def schema(
-    app: procrastinate.App,
-    action: str,
-    alembic_version: str | None = None,
-    alembic_phase: str | None = None,
-):
+async def schema(app: procrastinate.App, action: str):
     """
     Apply SQL schema to the empty database. This won't work if the schema has already
     been applied.
@@ -670,27 +637,6 @@ async def schema(
         print_stderr("Done")
     elif action == "read":
         print(schema_manager.get_schema().strip())
-    elif action == "alembic_plan":
-        print(
-            json.dumps(
-                [
-                    migration.as_dict()
-                    for migration in schema_manager.get_alembic_migration_plan()
-                ],
-                indent=2,
-            )
-        )
-    elif action == "alembic_revision":
-        if alembic_version is None or alembic_phase is None:
-            raise ValueError(
-                "--alembic-revision requires --alembic-version and --alembic-phase"
-            )
-        print(
-            schema_manager.get_alembic_revision(
-                version=alembic_version,
-                phase=cast(schema_module.MigrationPhase, alembic_phase),
-            )
-        )
     else:
         print(schema_manager.get_migrations_path())
 

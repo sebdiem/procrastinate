@@ -109,29 +109,6 @@ def test_main(mocker):
             },
         ),
         (
-            ["schema", "--alembic-plan"],
-            {
-                "command": "schema",
-                "action": "alembic_plan",
-            },
-        ),
-        (
-            [
-                "schema",
-                "--alembic-revision",
-                "--alembic-version",
-                "3.4.0",
-                "--alembic-phase",
-                "pre",
-            ],
-            {
-                "command": "schema",
-                "action": "alembic_revision",
-                "alembic_version": "3.4.0",
-                "alembic_phase": "pre",
-            },
-        ),
-        (
             ["shell"],
             {
                 "command": "shell",
