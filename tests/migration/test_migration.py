@@ -130,6 +130,7 @@ def make_alembic_config(tmp_path, dbname, *version_locations):
     config = alembic_config.Config()
     config.set_main_option("script_location", str(script_location))
     config.set_main_option("sqlalchemy.url", f"postgresql+psycopg:///{dbname}")
+    config.set_main_option("path_separator", "space")
     config.set_main_option(
         "version_locations", " ".join(str(path) for path in version_locations)
     )
@@ -151,12 +152,16 @@ def alembic_database(db_factory):
     return dbname
 
 
-def test_alembic_migration(schema_database, alembic_database, tmp_path):
+def test_alembic_migration(schema_database, alembic_database, db_execute, tmp_path):
     run_alembic_migrations(
         tmp_path,
         alembic_database,
         schema.SchemaManager.get_alembic_versions_path(),
     )
+
+    # Alembic's own bookkeeping table is not part of Procrastinate's schema.
+    with db_execute(alembic_database) as execute:
+        execute("DROP TABLE alembic_version")
 
     with contextlib.ExitStack() as stack:
         schema_db_session = stack.enter_context(
