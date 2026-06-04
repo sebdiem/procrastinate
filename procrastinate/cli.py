@@ -670,8 +670,6 @@ async def schema(
         print_stderr("Done")
     elif action == "read":
         print(schema_manager.get_schema().strip())
-    elif action == "migrations_path":
-        print(schema_manager.get_migrations_path())
     elif action == "alembic_plan":
         print(
             json.dumps(
@@ -682,7 +680,7 @@ async def schema(
                 indent=2,
             )
         )
-    else:
+    elif action == "alembic_revision":
         if alembic_version is None or alembic_phase is None:
             raise ValueError(
                 "--alembic-revision requires --alembic-version and --alembic-phase"
@@ -693,6 +691,8 @@ async def schema(
                 phase=cast(schema_module.MigrationPhase, alembic_phase),
             )
         )
+    else:
+        print(schema_manager.get_migrations_path())
 
 
 async def healthchecks(app: procrastinate.App):
